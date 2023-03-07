@@ -1,10 +1,7 @@
-all: slides purl copy
+all: slides purl
 
 slides: index.Rmd slides.css
 	Rscript -e 'library("rmarkdown"); render("index.Rmd")'
 
 purl: index.Rmd
 	Rscript -e "knitr::purl(\"index.Rmd\")"
-
-copy: index.html slides.css macros.js
-	cp -R -u index_files index.html macros.js slides.css libs resources ~/work/web/jekyll/blog/slides/ncse-seminar-2022/
