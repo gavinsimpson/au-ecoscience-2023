@@ -1,0 +1,45 @@
+title: "Quantifying trends in ecological data using GAMs"
+authors:
+  - family-names: Simpson
+    given-names: Gavin
+    orcid: "https://orcid.org/0000-0002-9084-8413"
+cff-version: 1.2.0
+contact:
+  - affiliation: "Department of Animal and Veterinary Sciences, Aarhus University"
+    email: "ucfagls@gmail.com"
+    family-names: Simpson
+    given-names: Gavin
+date-released: "2023-03-08"
+doi: "FIXME"
+version: "1.0"
+keywords:
+  - "biodiversity"
+  - "time series"
+  - "generalised additive models"
+  - "trends"
+  - "penalized splines"
+license: "CC-BY-4.0"
+license-url: "https://creativecommons.org/licenses/by/4.0/legalcode"
+abstract: "Climate change and other human-caused environmental disturbance
+  may lead to declines in biodiversity. Recently, a number of studies have
+  collated large data sets of monitoring time series for selected ecosystem
+  or organism groups and used these data sets to estimate trends in
+  biodiversity, with many studies identifying large declines in biodiversity
+  across a number of organisms or ecosystems. These results are not without
+  controversy however; data selection and quality issues, as well as
+  questions over statistical methodology have lead to vigorous debate.
+
+  Typically, trends in biodiversity are estimated using linear effects, via
+  generalized linear mixed (or hierarchical) models to account for site-to-site
+  heterogeneity in temporal trends. Additionally, year-to-year variation may
+  enhance or mask estimated losses or gains in biodiversity over time if the
+  first observation year in a given series is unusually rich or depauperate.
+  Using year random effects has been suggested as a mechanism to account for
+  this potential bias. An alternative way to model trends in biodiversity
+  time series is using penalized splines for the trends, leading to
+  hierarchical generalized additive models (HGAMs). Here, I introduce HGAMs
+  and penalized splines and their use for modelling biodiversity trends, and
+  reanalyze a forest arthropod diversity time series data set. Additionally,
+  I analyse a time series weekly cases of Lyme borreliosis in Norway, to
+  investigate changes in the seasonal incidence and timing of peak cases of
+  Lyme disease."

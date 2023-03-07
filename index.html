@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Quantifying trends in ecological data using GAMs</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Gavin Simpson" />
+    <meta name="date" content="2023-03-08" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="slides.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: inverse, middle, left, my-title-slide, title-slide
+
+.title[
+# Quantifying trends in ecological data using GAMs
+]
+.author[
+### Gavin Simpson
+]
+.institute[
+### Department of Animal and Veterinary Sciences
+]
+.date[
+### March 8, 2023
+]
+
+---
+
+
+
+
+# Two case studies
+
+1. Trends in biodiversity data, and
+
+2. Shifting seasonality in cases of lyme borreliosis
+
+---
+class: inverse middle center subsection
+
+# Biodiversity trends
+
+---
+
+# Biodiversity losses
+
+.center[![:scale 75%](./resources/living-planet-index-by-region.svg)
+]
+
+???
+
+Many of us will be familiar with trends like this
+
+Global biodiversity is in trouble
+
+Wherever we look we see declining populations
+
+Living Plant Index is an average measure of change (so some time series in a region could be increasing even if overall we have a decline in LPI)
+
+---
+
+# Biodiversity losses..?
+
+.center[![:scale 100%](./resources/vellend-et-al-2013.png)
+]
+
+Vellend *et al* (2013) *PNAS*
+
+.center[![:scale 100%](./resources/dornelas-et-al-2014.png)
+]
+
+Dornelas *et al* 2014 *Science*
+
+???
+
+But studies showing declining biodiversity are not without issue
+
+There has been a decade or more long discussion about the extent to which diversity is declining
+
+---
+
+# Biodiversity losses..?
+
+.center[![:scale 100%](./resources/gonzalez-et-al-2016.png)
+]
+
+Gonzalez *et al* (2016) *Ecology*
+
+.center[![:scale 100%](./resources/vellend-et-al-2017.png)
+]
+
+Vellend *et al* 2017 *Ecology*
+
+---
+
+# Biodiversity gains &amp; losses
+
+.center[![:scale 75%](./resources/dornelas-et-al-2019.png)
+]
+
+Dornelas *et al* (2019) *Ecology Letters*
+
+In part disagreement relates to *population* versus *assemblage* level metrics
+
+Partly due to how the data are analysed
+
+---
+
+# Linear trends
+
+Majority of these large-scale syntheses use linear trend models
+
+.center[![:scale 75%](./resources/dornelas-et-al-2014-fig-2.jpeg)
+]
+
+Fig 2 from Dornelas *et al* (2014) *Science*
+
+`\(y_i\)` sometimes transformed
+
+---
+
+# Seibold et al 2019
+
+Analysed 150 grassland and 140 forest sites across 3 regions of Germany 2008&amp;ndash;2017
+
+.center[![:scale 75%](./resources/seibold-et-al-2019.png)
+]
+
+Seibold *et al* (2019) *Nature*
+
+---
+
+# Declining arthopod biomass, abundance, and richness
+
+.center[![:scale 60%](./resources/seibold-et-al-fig-1.svg)
+]
+
+Seibold *et al* (2019) *Nature*
+
+---
+
+# Declining arthopod biomass, abundance, and richness
+
+* Grasslands
+
+    * Biomass &amp;#8595; 67%
+
+    * Abundance &amp;#8595; 78%
+
+    * Richness &amp;#8595; 36%
+
+* Forests (30 site subset)
+
+    * Biomass &amp;#8595; 41%
+
+    * Richness &amp;#8595; 36%
+
+---
+
+# Good and bad years
+
+.center[
+![:scale 60%](./resources/fournier-et-al-2019.svg)
+]
+
+Fournier *et al* (2019) *Conservation Biology* [doi: 10.1111/cobi.13371](https://doi.org/10.1111/cobi.13371)
+
+---
+
+# Good and bad years
+
+Daskalova *et al* (2021) attempted to account for this effect using random effects of `Year`
+
+.center[
+![:scale 75%](./resources/daskalova-et-al-2021-fig-1.svg)
+]
+
+Daskalova *et al* (2021) *Insect Conservation &amp; Diversity*
+
+---
+
+# Generalized Additive Models
+
+Random effects of `Year` are one form of common trend
+
+Year-to-year variation about some overall mean
+
+--
+
+Random effects are a special case of a penalized spline
+
+--
+
+GAMs
+
+---
+
+# Generalized Additive Models
+
+&lt;br /&gt;
+
+![](resources/tradeoff-slider.png)
+
+.references[Source: [GAMs in R by Noam Ross](https://noamross.github.io/gams-in-r-course/)]
+
+GAMs are an intermediate-complexity model
+
+* can learn from data without needing to be informed by the user
+* remain interpretable because we can visualize the fitted features
+* fit smooth functions using penalized splines
+
+---
+
+
+
+# Splines
+
+.center[![](resources/spline-anim.gif)]
+
+---
+
+# Splines formed from basis functions
+
+![](index_files/figure-html/basis-functions-1.svg)&lt;!-- --&gt;
+
+???
+
+Splines are built up from basis functions
+
+Here I'm showing a cubic regression spline basis with 10 knots/functions
+
+We weight each basis function to get a spline. Here all the basis functions have the same weight so they would fit a horizontal line
+
+---
+
+# Weight basis functions &amp;#8680; spline
+
+
+
+.center[![](resources/basis-fun-anim.gif)]
+
+???
+
+But if we choose different weights we get more wiggly spline
+
+---
+
+# Maximize penalized log-likelihood &amp;#8680; &amp;beta;
+
+
+
+.center[![](resources/gam-crs-animation.gif)]
+
+???
+
+Fitting a GAM involves finding the weights for the basis functions that produce a spline that fits the data best, subject to some constraints
+
+---
+
+# GAM summary
+
+1. GAMs give us a framework to model flexible nonlinear relationships
+
+2. Use little functions (**basis functions**) to make big functions (**smooths**)
+
+3. Use a **penalty** to trade off wiggliness/generality 
+
+4. Need to make sure your smooths are **wiggly enough**
+
+---
+
+# Arthropod abundance
+
+.center[![:scale 90%](./resources/arthropod-abundance.svg)
+]
+
+---
+
+# Arthropod abundance
+
+Negative binomial GAM fitted to single site (AEG1)
+
+.center[![:scale 70%](./resources/arthropod-abundance-site-aeg1-negbin-gam.svg)
+]
+
+---
+
+# Grassland arthropod abundance
+
+Our example:
+
+* Abundance of all identified Arthropods
+
+* Grassland sites only
+
+* Models
+
+    * Linear global and site-specific trends (random slopes &amp; intercepts)
+    * Smooth trend of `year` plus `site` random intercepts
+    * Regional smooths of `year` plus `site` random intercepts
+    * Regional smooths of `year`, `site` specific *random* smooths
+    * Regional smooths of `year`, year-to-year effects, `site` specific *random* smooths
+
+---
+
+# Random smooths?
+
+* Random intercepts
+* Random slopes
+* Random smooths?
+
+Random smooths yield a separate smooth for each subject
+
+Share a wiggliness penalty (plus `\(\lambda\)` for intercepts &amp; slopes)
+
+But individual trends can have different shape
+
+---
+
+# Random smooth model
+
+`site` specific *random* smooths
+
+.center[![:scale 70%](./resources/arthropod-abundance-m3.svg)
+]
+
+Pedersen _et al_ (2019) [PeerJ **7**:e6876](https://doi.org/10.7717/peerj.6876)
+
+---
+
+# Model A
+
+Regional smooths of `year`, `site` specific *random* smooths
+
+.center[![:scale 80%](./resources/arthropod-abundance-m4.svg)
+]
+
+---
+
+# Model B
+
+Regional smooths of `year`, year-to-year effects, `site` specific *random* smooths
+
+.center[![:scale 80%](./resources/arthropod-abundance-m5.svg)
+]
+
+---
+
+# Results
+
+* Model A (without Y2Y effects): AIC 15122 (255.7 EDF)
+* Model B (with Y2Y effects): AIC 15123 (254.2 EDF)
+* Equivalent mixed linear trend model (with Y2Y effects): AIC 15468 (111.8 EDF)
+
+Use year-to-year effects or not?
+
+--
+
+(For these data) **A** and **B** are different ways to decompose the temporal effects
+
+* Without Y2Y &amp;#8594;	wigglier regional smooths
+* With Y2Y &amp;#8594; less wiggly regional smooths
+
+???
+
+Even with relatively simple data, GAMs yield much better fit than linear equiv.
+
+---
+
+# Nothing new under the sun
+
+Fewster, Buckland, *et al* (2000) *Ecology*
+
+(except Simon Wood's excellent {mgcv} software &amp; ability to fit random smooths)
+
+---
+
+# Summary
+
+How we model trends in biodiversity data can change our view of losses and gains
+
+Using "smooth" trends gives much better fit for the arthropod data here
+
+Y2Y effects and / or smooth trends represent different decompositions of the *temporal* effect
+
+Non/linear methods needed if we want to assess changes in rates of change
+
+---
+class: inverse subsection center middle
+
+# Lyme borreliosis
+
+
+
+---
+
+# Lyme borreliosis
+
+.row[
+
+.col-9[
+Lyme disease is a zoonotic infection
+
+Caused by bacteria (spirochetes) in the *Borrelia burgdorferi* sensu lato complex
+
+Transmitted by infected tick larvae &amp; nymphs in the genus *Ixodes* during blood meals
+
+Common vector-borne disease in N hemisphere
+
+Reported cases of Lyme borreliosis have increased in recent decades
+]
+
+.col-3[
+
+.center[
+&lt;img src="resources/Adult_deer_tick.jpg" width="1763" /&gt;
+]
+
+.smaller[Adult deer tick, *Ixodes scapularis*
+
+(Source: Scott Bauer)
+]
+
+]
+
+]
+???
+
+Increased in both number and geographical range
+
+---
+
+# Tick-borne disease &amp; climate
+
+.center[
+&lt;img src="resources/gilbert-tick-zoonoses-schematic.png" width="90%" /&gt;
+]
+
+.smaller[source: Gilbert (2021) *Annu. Rev. Entomol.* [10.1146/annurev-ento-052720-094533](https://doi.org/10.1146/annurev-ento-052720-094533)
+
+
+]
+
+---
+
+# Tick-borne disease &amp; climate
+
+Aim of Goren *et al* (2023) was to study
+
+1. the incidence, and
+
+2. the seasonal timing
+
+of Lyme borreliosis at the northern limit of the range in Europe
+
+---
+
+# Cases of Lyme borreliosis in Norway
+
+&lt;img src="index_files/figure-html/lyme-cases-plot-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+.small[
+Data: Goren *et al* (2023) *Proc. Biol. Sci.* [10.1098/rspb.2022.2420](https://doi.org/10.1098/rspb.2022.2420)
+]
+
+---
+
+# Climate change in Norway
+
+Compared to 1979&amp;ndash;2008 reference period
+
+Annual mean temperature increased by ~ 0.5&amp;#8451;
+
+Winter temperatures increase by ~1&amp;#8451;
+
+Growing season increased by 1&amp;ndash;2 weeks nationally
+
+Annual precipitation increased by ~3% per decade
+
+---
+
+# GAM for seasonal data
+
+Assume weekly cases are distributed Negative binomial
+
+$$
+\texttt{cases}_i \sim \mathcal{NB}(\mu_i, \theta)
+$$
+
+Lots of ways to decompose these data; settled on
+
+.small[
+$$
+\log (\mathbb{E}(\texttt{cases}_i) ) = \beta_0 + f(\texttt{week}_i , \texttt{year}_i) + \log(\texttt{population}_i)
+$$
+]
+
+where
+
+$$
+f(\texttt{week}_i , \texttt{year}_i)
+$$
+
+is a tensor product smooth (main effects plus interaction)
+
+---
+
+# GAM for seasonal data
+
+Model code looks like:
+
+
+```r
+m &lt;- bam(cases ~ s(week, bs = "cc", k = 20) +
+                 s(year, k = 25) +
+                 ti(week, year, bs = c("cc", "tp"), k = c(20, 20)) +
+                 offset(log(pop)),
+    data = lyme,
+    family = nb(),
+    method = "fREML",
+    knots = list(week = c(0.5, 52.5)),
+    discrete = TRUE,
+    nthreads = 4)
+```
+
+Using lots of *mgcv* tricks to fit the model *fast* as some decompositions take a long time to fit with `gam()`
+
+Decomposed tensor product into main smooth effects plus a pure smooth interaction
+
+---
+
+# Estimated smooth functions
+
+&lt;img src="index_files/figure-html/lyme-draw-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Estimated seasonal curves
+
+&lt;img src="index_files/figure-html/lyme-plot-fitted-curves-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# How has timing of peak changed?
+
+Easy &amp;mdash; using data in previous figure, find week in each year where `\(\widehat{\texttt{cases}}_j\)` is maximal
+
+--
+
+Harder &amp;mdash; account for the uncertainty in the model &amp; put an uncertainty band on `\(\widehat{\texttt{peak}}_j\)`
+
+--
+
+GAMs are an *empirical Bayesian* model so we can simulate from the posterior distribution of the model to get answers to questions like this
+
+---
+
+# How has timing of peak changed?
+
+*gratia* 📦 has functions to make doing this easy(-ish)
+
+
+```r
+ds2 &lt;- data_slice(m, week = unique(week), year = unique(year),
+    pop = log(100000))
+ds2 &lt;- ds2 |&gt;
+    add_column(row = seq_len(nrow(ds2)), .before = 1L)
+
+fs2 &lt;- fitted_samples(m, data = ds2, n = 10000, seed = 42, scale = "response")
+
+fs2 &lt;- fs2 |&gt;
+    left_join(ds2, by = join_by(row)) |&gt;
+    select(-pop)
+
+peak_week &lt;- fs2 |&gt;
+    group_by(year, draw) |&gt;
+    slice_max(order_by = fitted, n = 1) |&gt;
+    group_by(year) |&gt;
+    summarise(peak = quantile(week, prob = 0.5),
+        lower_ci = quantile(week, prob = 0.055),
+        upper_ci = quantile(week, prob = 0.945))
+```
+
+---
+
+# How has timing of peak changed?
+
+&lt;img src="index_files/figure-html/lyme-plot-peak-week-1.svg" width="95%" style="display: block; margin: auto;" /&gt;
+
+---
+
+# Slides
+
+* &amp;copy; Simpson (2022-2023) [![Creative Commons Licence](https://i.creativecommons.org/l/by/4.0/88x31.png)](http://creativecommons.org/licenses/by/4.0/)
+
+* HTML Slide deck [gavinsimpson.github.io/au-ecoscience-2023/](https://gavinsimpson.github.io/au-ecoscience-2023/)
+
+* RMarkdown [https://github.com/gavinsimpson/esa-csee-2022](https://github.com/gavinsimpson/au-ecoscience-2023)
+
+* DOI: 10.5281/zenodo.7003949 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7003948.svg)](https://doi.org/10.5281/zenodo.7003948)
+
+* @ucfagls on Twitter
+
+---
+
+# Representing trends
+
+With the penalty idea we can imagine several ways to account for temporal effects in GAMs
+
+1. Fixed year effects
+2. Random year effects
+3. MRF equivalent of AR
+4. Smooth
+5. Linear
+6. ...
+
+1 &amp; 5 typically not penalized (but could be via `paraPen`)
+
+Could combine these hierarchically
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script src="macros.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:9"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
