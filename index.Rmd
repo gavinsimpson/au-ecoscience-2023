@@ -51,7 +51,7 @@ anim_res <- 200
 
 1. Trends in biodiversity data, and
 
-2. Shifting seasonality in cases of lyme borreliosis
+2. Shifting seasonality in cases of Lyme borreliosis
 
 ---
 class: inverse middle center subsection
@@ -145,6 +145,10 @@ Analysed 150 grassland and 140 forest sites across 3 regions of Germany 2008&nda
 ]
 
 Seibold *et al* (2019) *Nature*
+
+???
+
+As an example of why using linear trends might be problematic, I will use this recent example from Seibold et al
 
 ---
 
@@ -524,6 +528,8 @@ Fewster, Buckland, *et al* (2000) *Ecology*
 
 (except Simon Wood's excellent {mgcv} software & ability to fit random smooths)
 
+Jonas Knape (2016, *J. App. Ecol.*)
+
 ---
 
 # Summary
@@ -534,7 +540,7 @@ Using "smooth" trends gives much better fit for the arthropod data here
 
 Y2Y effects and / or smooth trends represent different decompositions of the *temporal* effect
 
-Non/linear methods needed if we want to assess changes in rates of change
+Non-linear methods needed if we want to assess changes in rates of change
 
 ---
 class: inverse subsection center middle
@@ -615,6 +621,7 @@ knitr::include_graphics("resources/gilbert-tick-zoonoses-schematic.png")
 ]
 
 .smaller[source: Gilbert (2021) *Annu. Rev. Entomol.* [10.1146/annurev-ento-052720-094533](https://doi.org/10.1146/annurev-ento-052720-094533)
+]
 
 ???
 
@@ -622,7 +629,6 @@ Figure caption from Gilbert (2021)
 
 Schematic diagram showing how climate change can affect ticks directly (by changing oviposition, development, mortality rates, and activity) and indirectly (by changing habitat and host species and abundance). Climate change can, in turn, affect tick-borne pathogen infection risk in humans by directly affecting human behavior (e.g., outdoor recreation) and indirectly affecting pathogen transmission rates and prevalence via hosts and ticks. The relative importance of each pathway is challenging to ascertain.
 
-]
 
 ---
 
@@ -750,11 +756,11 @@ fv |>
 
 # How has timing of peak changed?
 
-Easy &mdash; using data in previous figure, find week in each year where $\widehat{\texttt{cases}}_j$ is maximal
+Easy &mdash; using data in previous figure, find week in each year where $\widehat{\texttt{cases}}_{ij}$ is maximal
 
 --
 
-Harder &mdash; account for the uncertainty in the model & put an uncertainty band on $\widehat{\texttt{peak}}_j$
+Harder &mdash; account for the uncertainty in the model & put an uncertainty band on $\widehat{\texttt{peak}}_{ij}$
 
 --
 
@@ -767,8 +773,8 @@ GAMs are an *empirical Bayesian* model so we can simulate from the posterior dis
 *gratia* 📦 has functions to make doing this easy(-ish)
 
 ```{r lyme-posterior-simulation, cache = TRUE, echo = TRUE}
-ds2 <- data_slice(m, week = unique(week), year = unique(year),
-    pop = log(100000))
+ds2 <- data_slice(m, week = unique(week), year = unique(year), pop = log(100000))
+
 ds2 <- ds2 |>
     add_column(row = seq_len(nrow(ds2)), .before = 1L)
 
@@ -791,14 +797,30 @@ peak_week <- fs2 |>
 
 # How has timing of peak changed?
 
-```{r lyme-plot-peak-week, cache = TRUE, out.width = "95%", fig.align = "center"}
+```{r lyme-plot-peak-week, cache = TRUE, out.width = "95%", fig.align = "center", dependson = -1}
 peak_week |>
     ggplot(aes(x = year, y = peak)) +
     geom_pointrange(aes(ymin = lower_ci, ymax = upper_ci)) +
     labs(y = "Week of peak cases", x = NULL,
-        caption = "89% credible interval") +
+        caption = "(89% credible interval)") +
     theme_grey(base_size = 18)
 ```
+
+---
+
+# Summary
+
+GAMs offer a flexible way to model (decompose) temporal variation in ecological time series
+
+Can be adapted in many ways
+
+* space
+* space & time
+* covariate effects
+* model distributions or quantiles
+* handle very large data
+
+Posterior inference allows us to do many useful things (easily &mdash, more easily)
 
 ---
 
@@ -810,7 +832,7 @@ peak_week |>
 
 * RMarkdown [https://github.com/gavinsimpson/au-ecoscience-2023](https://github.com/gavinsimpson/au-ecoscience-2023)
 
-* DOI: 10.5281/zenodo.7706659 [![DOI](https://doi.org/10.5281/zenodo.7706659.svg)](https://doi.org/10.5281/zenodo.7706659)
+* DOI: 10.5281/zenodo.7706659 [![DOI](https://zenodo.org/badge/610948193.svg)](https://zenodo.org/badge/latestdoi/610948193)
 
 * @ucfagls on Twitter
 

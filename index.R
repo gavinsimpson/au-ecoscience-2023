@@ -249,8 +249,8 @@ fv |>
 
 
 ## ----lyme-posterior-simulation, cache = TRUE, echo = TRUE---------------------
-ds2 <- data_slice(m, week = unique(week), year = unique(year),
-    pop = log(100000))
+ds2 <- data_slice(m, week = unique(week), year = unique(year), pop = log(100000))
+
 ds2 <- ds2 |>
     add_column(row = seq_len(nrow(ds2)), .before = 1L)
 
@@ -269,11 +269,11 @@ peak_week <- fs2 |>
         upper_ci = quantile(week, prob = 0.945))
 
 
-## ----lyme-plot-peak-week, cache = TRUE, out.width = "95%", fig.align = "center"----
+## ----lyme-plot-peak-week, cache = TRUE, out.width = "95%", fig.align = "center", dependson = -1----
 peak_week |>
     ggplot(aes(x = year, y = peak)) +
     geom_pointrange(aes(ymin = lower_ci, ymax = upper_ci)) +
     labs(y = "Week of peak cases", x = NULL,
-        caption = "89% credible interval") +
+        caption = "(89% credible interval)") +
     theme_grey(base_size = 18)
 
